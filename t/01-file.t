@@ -9,7 +9,7 @@ use File::Spec;
 use Encode;
 use Cwd;
 use URI;
-use Test::More tests => 6;
+use Test::More tests => 7;
 
 my $ua = LWP::UserAgent->new;
 my $cwd = getcwd;
@@ -35,3 +35,12 @@ for my $enc (qw/utf-8 euc-jp shiftjis iso-2022-jp/){
     my $canon = find_encoding($enc)->name;
     is $res->encoding, $canon, "\$res->encoding eq '$canon'"; 
 }
+
+my $uri = URI->new('file://');
+$uri->path(File::Spec->catfile($cwd, "t", "t-null.html"));
+my $res = $ua->get($uri);
+die unless $res->is_success;
+eval {
+    $res->decoded_content;
+};
+ok $@, $@;

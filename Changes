@@ -1,8 +1,14 @@
 # Revision history for HTTP-Response-Encoding
 #
-# $Id: Changes,v 0.1 2007/04/17 13:14:24 dankogai Exp dankogai $
+# $Id: Changes,v 0.2 2007/04/17 13:56:12 dankogai Exp dankogai $
 # 
-$Revision: 0.1 $ $Date: 2007/04/17 13:14:24 $
+$Revision: 0.2 $ $Date: 2007/04/17 13:56:12 $
+! lib/HTTP/Response/Encoding.pm
+  t/01-file.pm
+  + more descriptive error message for decoded_content().
+  + test case for failure added
+
+0.01 2007/04/17 13:14:24
 + *
   First version.
 
