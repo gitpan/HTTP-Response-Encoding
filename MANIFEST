@@ -11,5 +11,6 @@ t/pod-coverage.t
 t/pod.t
 t/t-euc-jp.html
 t/t-iso-2022-jp.html
+t/t-null.html
 t/t-shiftjis.html
 t/t-utf-8.html

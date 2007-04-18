@@ -1,8 +1,13 @@
 # Revision history for HTTP-Response-Encoding
 #
-# $Id: Changes,v 0.2 2007/04/17 13:56:12 dankogai Exp dankogai $
+# $Id: Changes,v 0.3 2007/04/18 04:50:40 dankogai Exp $
 # 
-$Revision: 0.2 $ $Date: 2007/04/17 13:56:12 $
+$Revision: 0.3 $ $Date: 2007/04/18 04:50:40 $
+! MANIFEST
++ t/t-null.html
+  forgot to add. sorry.
+
+0.02 2007/04/17 13:56:12
 ! lib/HTTP/Response/Encoding.pm
   t/01-file.pm
   + more descriptive error message for decoded_content().

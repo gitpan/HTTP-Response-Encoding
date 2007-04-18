@@ -1,7 +1,7 @@
 package HTTP::Response::Encoding;
 use warnings;
 use strict;
-our $VERSION = sprintf "%d.%02d", q$Revision: 0.2 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%02d", q$Revision: 0.3 $ =~ /(\d+)/g;
 
 sub HTTP::Response::encoding {
     require Encode;
