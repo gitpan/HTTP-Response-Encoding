@@ -1,8 +1,13 @@
 # Revision history for HTTP-Response-Encoding
 #
-# $Id: Changes,v 0.3 2007/04/18 04:50:40 dankogai Exp $
+# $Id: Changes,v 0.4 2007/04/20 05:40:37 dankogai Exp dankogai $
 # 
-$Revision: 0.3 $ $Date: 2007/04/18 04:50:40 $
+$Revision: 0.4 $ $Date: 2007/04/20 05:40:37 $
+! lib/HTTP/Response/Encoding.pm
+  When you require Carp, you should surround arguments with ().
+  Message-Id: <200704200454.l3K4sMHL008173@franz.ak.mind.de>
+
+0.03 2007/04/18 04:50:40
 ! MANIFEST
 + t/t-null.html
   forgot to add. sorry.

@@ -1,7 +1,7 @@
 package HTTP::Response::Encoding;
 use warnings;
 use strict;
-our $VERSION = sprintf "%d.%02d", q$Revision: 0.3 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%02d", q$Revision: 0.4 $ =~ /(\d+)/g;
 
 sub HTTP::Response::encoding {
     require Encode;
@@ -22,7 +22,7 @@ sub HTTP::Response::decoded_content {
     my $self = shift;
     return unless $self->content;
     unless ($self->encoding){
-	Carp::croak "Cannot find encoding for ", $self->request->uri;
+	Carp::croak("Cannot find encoding for ", $self->request->uri);
     }
     return $self->{__encoding}->decode($self->content);
 }
@@ -33,7 +33,7 @@ HTTP::Response::Encoding - Adds encoding() to HTTP::Response
 
 =head1 VERSION
 
-Version 0.02
+$Id: Encoding.pm,v 0.4 2007/04/20 05:40:37 dankogai Exp dankogai $
 
 =cut
 
