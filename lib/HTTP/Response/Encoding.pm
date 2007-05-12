@@ -1,30 +1,29 @@
 package HTTP::Response::Encoding;
 use warnings;
 use strict;
-our $VERSION = sprintf "%d.%02d", q$Revision: 0.4 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%02d", q$Revision: 0.5 $ =~ /(\d+)/g;
 
-sub HTTP::Response::encoding {
-    require Encode;
+sub HTTP::Response::charset {
     my $self = shift;
+    return $self->{__charset} if exists $self->{__charset};
     my $content_type = $self->headers->header('Content-Type');
     return unless $content_type;
     $content_type =~ /charset=([A-Za-z0-9_\-]+)/io;
-    return unless $1;
-    my $enc = Encode::find_encoding($1);
-    return unless $enc;
-    $self->{__encoding} = $enc;
-    return $enc->name;
+    $self->{__charset} = $1 || undef;
 }
 
-sub HTTP::Response::decoded_content {
-    require Carp;
+sub HTTP::Response::encoder {
     require Encode;
     my $self = shift;
-    return unless $self->content;
-    unless ($self->encoding){
-	Carp::croak("Cannot find encoding for ", $self->request->uri);
-    }
-    return $self->{__encoding}->decode($self->content);
+    return $self->{__encoder} if exists $self->{__encoder};
+    my $charset = $self->charset or return;
+    my $enc = Encode::find_encoding($charset);
+    $self->{__encoder} = $enc;
+}
+
+sub HTTP::Response::encoding {
+    my $enc = shift->encoder or return;
+    $enc->name;
 }
 
 =head1 NAME
@@ -33,7 +32,7 @@ HTTP::Response::Encoding - Adds encoding() to HTTP::Response
 
 =head1 VERSION
 
-$Id: Encoding.pm,v 0.4 2007/04/20 05:40:37 dankogai Exp dankogai $
+$Id: Encoding.pm,v 0.5 2007/05/12 09:24:15 dankogai Exp $
 
 =cut
 
@@ -45,7 +44,6 @@ $Id: Encoding.pm,v 0.4 2007/04/20 05:40:37 dankogai Exp dankogai $
   my $ua = LWP::UserAgent->new();
   my $res = $ua->get("http://www.example.com/");
   warn $res->encoding;
-  print $res->decoded_content;
 
 =head1 EXPORT
 
@@ -56,6 +54,26 @@ Nothing.
 This module adds the following methods to  L<HTTP::Response> objects.
 
 =over 2
+
+=item C<< $res->charset >>
+
+Tells the charset I<exactly as appears> in the C<Content-Type:> header.
+Note that the presence of the charset does not guarantee if the
+response content is decodable via Encode.
+
+To normalize this, you should try
+
+  $res->encoder->mime_name; # with Encode 2.21 or above
+
+or
+
+  use I18N::Charset;
+  # ...
+  mime_charset_name($res->encoding);
+
+=item C<< $res->encoder >>
+
+Returns the corresponding encoder object or undef if it can't.
 
 =item C<< $res->encoding >>
 
@@ -78,19 +96,9 @@ encoding, try something like below;
 
 =item C<< $res->decoded_content >>
 
-Returns C<< $res->content >> but decoded to Perl utf8 string.
+Discontinued since HTTP::Message already has this method.
 
-Roughly equivalent to the code below.
-
-  Encode::decode($res->encoding, $res->content)
-
-Note it croaks when $res->encoding is false.  So you should check 
-C<< $res->encoding >> before using this method.
-
-  # i.e.
-  $content = $res->decoded_content if $res->encoding.
-
-Also note that the meta tag remains intact.
+See L<HTTP::Message> for details.
 
 =back
 
@@ -144,6 +152,10 @@ L<http://search.cpan.org/dist/HTTP-Response-Encoding>
 =back
 
 =head1 ACKNOWLEDGEMENTS
+
+GAAS for L<LWP>.
+
+MIYAGAWA for suggestions.
 
 =head1 COPYRIGHT & LICENSE
 

@@ -2,7 +2,7 @@ NAME
     HTTP::Response::Encoding - Adds encoding() to HTTP::Response
 
 VERSION
-    Version 0.01
+    $Id: README,v 0.2 2007/05/12 09:24:15 dankogai Exp $
 
 SYNOPSIS
       use LWP::UserAgent;
@@ -11,13 +11,30 @@ SYNOPSIS
       my $ua = LWP::UserAgent->new();
       my $res = $ua->get("http://www.example.com/");
       warn $res->encoding;
-      print $res->decoded_content;
 
 EXPORT
     Nothing.
 
 METHODS
     This module adds the following methods to HTTP::Response objects.
+
+    "$res->charset"
+      Tells the charset *exactly as appears* in the "Content-Type:" header.
+      Note that the presence of the charset does not guarantee if the
+      response content is decodable via Encode.
+
+      To normalize this, you should try
+
+        $res->encoder->mime_name; # with Encode 2.21 or above
+
+      or
+
+        use I18N::Charset;
+        # ...
+        mime_charset_name($res->encoding);
+
+    "$res->encoder"
+      Returns the corresponding encoder object or undef if it can't.
 
     "$res->encoding"
       Tells the content encoding in the canonical name in Encode. Returns
@@ -38,19 +55,9 @@ METHODS
         warn $res->encoding;
 
     "$res->decoded_content"
-      Returns "$res->content" but decoded to Perl utf8 string.
+      Discontinued since HTTP::Message already has this method.
 
-      Roughly equivalent to the code below.
-
-        Encode::decode($res->encoding, $res->content)
-
-      Note it croaks when $res->encoding is false. So you should check
-      "$res->encoding" before using this method.
-
-        # i.e.
-        $content = $res->decoded_content if $res->encoding.
-
-      Also note that the meta tag remains intact.
+      See HTTP::Message for details.
 
 INSTALLATION
     To install this module, run the following commands:
@@ -78,19 +85,27 @@ SUPPORT
 
     You can also look for information at:
 
-    * AnnoCPAN: Annotated CPAN documentation
+    *   AnnoCPAN: Annotated CPAN documentation
+
         <http://annocpan.org/dist/HTTP-Response-Encoding>
 
-    * CPAN Ratings
+    *   CPAN Ratings
+
         <http://cpanratings.perl.org/d/HTTP-Response-Encoding>
 
-    * RT: CPAN's request tracker
+    *   RT: CPAN's request tracker
+
         <http://rt.cpan.org/NoAuth/Bugs.html?Dist=HTTP-Response-Encoding>
 
-    * Search CPAN
+    *   Search CPAN
+
         <http://search.cpan.org/dist/HTTP-Response-Encoding>
 
 ACKNOWLEDGEMENTS
+    GAAS for LWP.
+
+    MIYAGAWA for suggestions.
+
 COPYRIGHT & LICENSE
     Copyright 2007 Dan Kogai, all rights reserved.
 

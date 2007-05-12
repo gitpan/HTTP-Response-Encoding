@@ -9,7 +9,7 @@ use File::Spec;
 use Encode;
 use Cwd;
 use URI;
-use Test::More tests => 7;
+use Test::More tests => 13;
 
 my $ua = LWP::UserAgent->new;
 my $cwd = getcwd;
@@ -19,20 +19,35 @@ my $cwd = getcwd;
 #    $^W = 0;
 #}
 
-for my $meth (qw/encoding decoded_content/){
+for my $meth (qw/charset encoder encoding decoded_content/){
     can_ok('HTTP::Response', $meth);
 }
 
-for my $enc (qw/utf-8 euc-jp shiftjis iso-2022-jp/){
+my %charset = qw(
+		 UTF-8        utf-8-strict;
+		 EUC-JP       EUC-JP
+		 Shift_JIS    SHIFT_JIS
+		 ISO-2022-JP  ISO-2022-JP
+	       );
+
+my %filename = qw(
+	      UTF-8        t-utf-8.html
+	      EUC-JP       t-euc-jp.html
+	      Shift_JIS    t-shiftjis.html
+	      ISO-2022-JP  t-iso-2022-jp.html
+	     );
+
+for my $charset (sort keys %charset){
     my $uri = URI->new('file://');
-    $uri->path(File::Spec->catfile($cwd, "t", "t-$enc.html"));
+    $uri->path(File::Spec->catfile($cwd, "t", $filename{$charset}));
     my $res;
     {
 	local $^W = 0; # to quiet LWP::Protocol
 	$res = $ua->get($uri);
     }
     die unless $res->is_success;
-    my $canon = find_encoding($enc)->name;
+    is $res->charset, $charset, "\$res->charset eq '$charset'";
+    my $canon = find_encoding($charset)->name;
     is $res->encoding, $canon, "\$res->encoding eq '$canon'"; 
 }
 
@@ -40,7 +55,4 @@ my $uri = URI->new('file://');
 $uri->path(File::Spec->catfile($cwd, "t", "t-null.html"));
 my $res = $ua->get($uri);
 die unless $res->is_success;
-eval {
-    $res->decoded_content;
-};
-ok $@, $@;
+is $res->encoding, undef, "res->encoding eq undef";
